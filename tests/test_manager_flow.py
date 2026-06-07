@@ -55,6 +55,18 @@ def test_manager_rejects_duplicate_normalized_skill_names(tmp_path: Path, make_s
         manager.add(str(source), mode="copy")
 
 
+def test_manager_rejects_invalid_install_mode_before_writing_state(tmp_path: Path, make_skill) -> None:
+    source = tmp_path / "source"
+    make_skill(source, "agent-skill")
+    manager = SkillsManager(tmp_path)
+
+    with pytest.raises(ValueError, match="install mode must be symlink or copy"):
+        manager.add(str(source), mode="hardlink")
+
+    assert not (tmp_path / ".skills").exists()
+    assert not (tmp_path / ".agents").exists()
+
+
 def test_manager_installs_bundled_skills_source(tmp_path: Path) -> None:
     source = Path(__file__).parents[1] / "skills"
     manager = SkillsManager(tmp_path)

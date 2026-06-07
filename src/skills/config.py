@@ -101,8 +101,13 @@ def unflatten_values(values: Mapping[str, Any]) -> dict[str, Any]:
     return data
 
 
-def _unflatten_tool_skills(values: Mapping[str, Any]) -> dict[str, Any]:
-    return {"tool": {"skills": unflatten_values(values)}}
+def _merge_tool_skills(raw: Mapping[str, Any], values: Mapping[str, Any]) -> dict[str, Any]:
+    data = dict(raw)
+    tool = data.get("tool", {})
+    tool = {} if not isinstance(tool, dict) else dict(tool)
+    tool["skills"] = unflatten_values(values)
+    data["tool"] = tool
+    return data
 
 
 class Config(MutableMapping[str, Any]):
@@ -204,7 +209,7 @@ class Config(MutableMapping[str, Any]):
 
     def _unflatten_data(self) -> dict[str, Any]:
         if self.wrapper == "tool.skills":
-            return _unflatten_tool_skills(self._data)
+            return _merge_tool_skills(load_toml(self.path), self._data)
         if self.project:
             return unflatten_values(self._data)
         return dict(self._data)

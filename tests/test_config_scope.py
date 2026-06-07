@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from skills import SkillsManager
+from skills._compat import tomllib
 
 
 def test_skills_toml_wins_over_tool_skills(tmp_path: Path) -> None:
@@ -58,3 +59,31 @@ def test_local_config_writes_active_project_config(tmp_path: Path) -> None:
     manager.set_config("install.mode", "copy", local=True)
 
     assert 'mode = "copy"' in (tmp_path / "skills.toml").read_text(encoding="utf-8")
+
+
+def test_local_pyproject_config_preserves_unrelated_sections(tmp_path: Path) -> None:
+    pyproject = tmp_path / "pyproject.toml"
+    pyproject.write_text(
+        """
+[project]
+name = "demo"
+version = "0.1.0"
+
+[tool.ruff]
+line-length = 100
+
+[tool.skills]
+agents = ["agents"]
+""",
+        encoding="utf-8",
+    )
+    manager = SkillsManager(tmp_path)
+
+    manager.set_config("install.mode", "copy", local=True)
+
+    with pyproject.open("rb") as file:
+        data = tomllib.load(file)
+    assert data["project"]["name"] == "demo"
+    assert data["tool"]["ruff"]["line-length"] == 100
+    assert data["tool"]["skills"]["agents"] == ["agents"]
+    assert data["tool"]["skills"]["install"]["mode"] == "copy"

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -97,6 +98,11 @@ class LockEntry:
         return data
 
 
+class InvalidLockError(ValueError):
+    def __init__(self, path: Path, reason: str) -> None:
+        super().__init__(f"invalid skills lock file at {path}: {reason}")
+
+
 @dataclass
 class SkillLock:
     path: Path
@@ -111,8 +117,16 @@ class SkillLock:
         except FileNotFoundError:
             return cls(path=path)
 
-        metadata = LockMetadata.from_data(data["metadata"])
+        raw_metadata = data.get("metadata")
+        if not isinstance(raw_metadata, Mapping):
+            raise InvalidLockError(path, "missing [metadata] table")
+        if "lock_version" not in raw_metadata:
+            raise InvalidLockError(path, "missing metadata.lock_version")
+        metadata = LockMetadata.from_data(dict(raw_metadata))
+
         raw_entries = data.get("skill", {})
+        if not isinstance(raw_entries, Mapping):
+            raise InvalidLockError(path, "[skill] must be a table")
         entries = {
             name: LockEntry.from_data(name, entry) for name, entry in raw_entries.items() if isinstance(entry, dict)
         }

@@ -14,6 +14,7 @@ from skills.source import FetchedSource
 CANONICAL_DIR = ".skills"
 INSTALLED_DIR = "installed"
 LOCK_FILE = "skills.lock"
+VALID_INSTALL_MODES = frozenset({"copy", "symlink"})
 
 
 @dataclass(frozen=True)
@@ -95,6 +96,7 @@ def canonical_root(project: Project, *, global_install: bool) -> Path:
 
 
 def install_from_source(project: Project, options: InstallOptions) -> list[InstallResult]:
+    _validate_install_mode(options.mode)
     hooks = project.require_hooks()
     parsed = hooks.parse_source(options.source)
     fetched = hooks.fetch_source(parsed, project, refresh=options.refresh)
@@ -239,13 +241,16 @@ def _install_target(canonical_path: Path, target_path: Path, mode: str) -> None:
     if mode == "copy":
         shutil.copytree(canonical_path, target_path, symlinks=True)
         return
-    if mode != "symlink":
-        raise InvalidInstallModeError(mode)
 
     try:
         target_path.symlink_to(canonical_path.resolve(), target_is_directory=True)
     except OSError:
         shutil.copytree(canonical_path, target_path, symlinks=True)
+
+
+def _validate_install_mode(mode: str) -> None:
+    if mode not in VALID_INSTALL_MODES:
+        raise InvalidInstallModeError(mode)
 
 
 def _remove_path(path: Path) -> None:
