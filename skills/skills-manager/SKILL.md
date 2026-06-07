@@ -61,8 +61,9 @@ agents = ["agents"]
 mode = "symlink"
 ```
 
-Python projects may use `[tool.skills]` in `pyproject.toml`. If both formats
-exist, `skills.toml` wins.
+`skills.toml` is the built-in project config file. Python-specific
+`pyproject.toml` sections are not read by default. Plugins may provide extra
+config sources, but they are lower priority than `skills.toml`.
 
 Supported keys:
 
@@ -77,7 +78,7 @@ Core built-ins are intentionally small:
 
 - local/Git sources;
 - `.agents/skills` target;
-- `skills.toml` and `[tool.skills]` config providers.
+- `skills.toml` project config and lower-priority plugin config sources.
 
 Add other agents or source formats through Pluggy hooks. Export plugin classes
 through the `skills` entry point group and use `from skills import hookimpl`.

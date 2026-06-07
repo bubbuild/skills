@@ -2,8 +2,9 @@
 
 Project scope is the default.
 
-A project is discovered from `skills.toml` or `pyproject.toml`. Project state is
-stored under that project root:
+A project is discovered from `skills.toml`. If no `skills.toml` is found,
+the provided working directory is treated as the project root. Project state is
+stored under that root:
 
 ```text
 .skills/

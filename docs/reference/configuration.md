@@ -1,8 +1,6 @@
 # Configuration Reference
 
-Project configuration can live in `skills.toml` or `[tool.skills]`.
-
-If both exist, `skills.toml` wins.
+Project configuration lives in `skills.toml`.
 
 ## `skills.toml`
 
@@ -13,15 +11,9 @@ agents = ["agents"]
 mode = "symlink"
 ```
 
-## `pyproject.toml`
-
-```toml
-[tool.skills]
-agents = ["agents"]
-
-[tool.skills.install]
-mode = "symlink"
-```
+Plugins may provide extra project config sources. Those sources are read below
+`skills.toml`, so local project config always has the final project-scoped
+override.
 
 ## Keys
 

@@ -84,12 +84,10 @@ class PluginRegistry:
 
     def _load_builtin_plugins(self) -> None:
         from skills.builtin.agents import AgentsTargetPlugin
-        from skills.builtin.config import ConfigSourcePlugin
         from skills.builtin.git import GitSourcePlugin
 
         self._register(GitSourcePlugin(), "builtin.git")
         self._register(AgentsTargetPlugin(), "builtin.agents")
-        self._register(ConfigSourcePlugin(), "builtin.config")
 
     def _load_entrypoint_plugins(self) -> None:
         for entry_point in importlib.metadata.entry_points(group=SKILLS_HOOK_NAMESPACE):

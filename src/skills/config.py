@@ -43,9 +43,6 @@ class ConfigSource:
     path: Path
     data: dict[str, Any]
     exists: bool
-    blocks_lower_priority: bool = False
-    project: bool = True
-    wrapper: str | None = None
 
 
 class GlobalOnlyConfigError(ValueError):
@@ -75,11 +72,6 @@ def flatten_values(data: Mapping[str, Any]) -> dict[str, Any]:
     return flatten("", data)
 
 
-def _flatten_tool_skills(data: Mapping[str, Any]) -> dict[str, Any]:
-    section = data.get("tool", {}).get("skills", {})
-    return flatten_values(section) if isinstance(section, Mapping) else {}
-
-
 def _assign_nested(data: dict[str, Any], parts: list[str], value: Any) -> None:
     current = data
     for part in parts[:-1]:
@@ -98,15 +90,6 @@ def unflatten_values(values: Mapping[str, Any]) -> dict[str, Any]:
             _assign_nested(data, key.split("."), dict(value))
         else:
             _assign_nested(data, key.split("."), value)
-    return data
-
-
-def _merge_tool_skills(raw: Mapping[str, Any], values: Mapping[str, Any]) -> dict[str, Any]:
-    data = dict(raw)
-    tool = data.get("tool", {})
-    tool = {} if not isinstance(tool, dict) else dict(tool)
-    tool["skills"] = unflatten_values(values)
-    data["tool"] = tool
     return data
 
 
@@ -140,11 +123,9 @@ class Config(MutableMapping[str, Any]):
         *,
         project: bool = False,
         data: dict[str, Any] | None = None,
-        wrapper: str | None = None,
     ) -> None:
         self.path = path
         self.project = project
-        self.wrapper = wrapper
         if data is not None:
             self._data = dict(data)
         else:
@@ -155,9 +136,8 @@ class Config(MutableMapping[str, Any]):
     def from_source(cls, source: ConfigSource) -> Config:
         return cls(
             source.path,
-            project=source.project,
+            project=True,
             data=source.data,
-            wrapper=source.wrapper,
         )
 
     @classmethod
@@ -201,15 +181,11 @@ class Config(MutableMapping[str, Any]):
         self.path.write_text(tomli_w.dumps(payload), encoding="utf-8")
 
     def _flatten_raw(self, raw: Mapping[str, Any]) -> dict[str, Any]:
-        if self.wrapper == "tool.skills":
-            return _flatten_tool_skills(raw)
         if self.project:
             return flatten_values(raw)
         return dict(raw)
 
     def _unflatten_data(self) -> dict[str, Any]:
-        if self.wrapper == "tool.skills":
-            return _merge_tool_skills(load_toml(self.path), self._data)
         if self.project:
             return unflatten_values(self._data)
         return dict(self._data)
@@ -219,12 +195,12 @@ class Config(MutableMapping[str, Any]):
 class ConfigStack:
     global_config: Config
     project_config: Config
-    fallback_project_configs: list[Config] = field(default_factory=list)
+    plugin_project_configs: list[Config] = field(default_factory=list)
 
     def get(self, key: str) -> Any:
         if key in self.project_config.data:
             return self.project_config[key]
-        for config in self.fallback_project_configs:
+        for config in self.plugin_project_configs:
             if key in config.data:
                 return config[key]
         if key in self.global_config.data:
@@ -234,7 +210,7 @@ class ConfigStack:
     def resolved(self) -> dict[str, Any]:
         values = Config.defaults()
         values.update(self.global_config.data)
-        for config in reversed(self.fallback_project_configs):
+        for config in reversed(self.plugin_project_configs):
             values.update(config.data)
         values.update(self.project_config.data)
         return values

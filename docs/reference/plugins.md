@@ -1,6 +1,6 @@
 # Plugin Reference
 
-Plugins extend sources, install targets, or config formats.
+Plugins extend sources, install targets, or extra config sources.
 
 Register plugins through the `skills` entry point group:
 
@@ -32,4 +32,6 @@ class Plugin:
 - `parse_source(raw)`: parse a source string.
 - `fetch_source(source, project, refresh)`: return a fetched local source tree.
 - `install_target(name, project, global_install)`: return a target directory.
-- `config_sources(project_root)`: return project config sources in priority order.
+- `config_sources(project_root)`: return extra project config sources. These
+  sources are read below `skills.toml` and above global defaults; plugins cannot
+  change project discovery or the local write target.

@@ -19,7 +19,7 @@ remove skills without hard-coding every agent integration into the core package.
 - Project installs are isolated by project root.
 - `--global` is the explicit shared scope.
 - Built-ins support local/Git sources and `.agents/skills`.
-- Plugins add new sources, targets, or config formats through hooks.
+- Plugins add new sources, targets, or extra config sources through hooks.
 
 ## What Is Intentionally Internal
 

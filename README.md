@@ -9,7 +9,7 @@ It provides:
 - project-scoped installs by default;
 - optional global installs with `--global`;
 - built-in local/Git sources and the `.agents/skills` target;
-- Pluggy hooks for adding sources, targets, and config formats.
+- Pluggy hooks for adding sources, targets, and extra config sources.
 
 ## Library First
 
@@ -53,17 +53,10 @@ agents = ["agents"]
 mode = "symlink"
 ```
 
-Python projects may use `[tool.skills]` instead:
-
-```toml
-[tool.skills]
-agents = ["agents"]
-
-[tool.skills.install]
-mode = "symlink"
-```
-
-If both exist, `skills.toml` wins.
+`skills.toml` is the built-in project config file. Python-specific
+`pyproject.toml` sections such as `[tool.skills]` are not read by default.
+Plugins may provide extra read-only config sources, but `skills.toml` remains
+the project-local override.
 
 ## State Model
 

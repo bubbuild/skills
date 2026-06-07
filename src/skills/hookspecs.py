@@ -34,5 +34,5 @@ class SkillsHookSpecs:
 
     @hookspec
     def config_sources(self, project_root: Path) -> list[ConfigSource]:
-        """Return project configuration sources in descending priority order."""
+        """Return extra project configuration sources below skills.toml."""
         raise NotImplementedError
