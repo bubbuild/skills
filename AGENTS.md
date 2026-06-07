@@ -17,7 +17,7 @@ This repository is a Python package using a `src` layout. Core library code live
 
 ## Coding Style & Naming Conventions
 
-Use Python 3.10+ syntax and keep code typed. Public functions and methods should have clear, stable return types. Prefer `pathlib.Path` for filesystem work, small functions, and explicit error classes for user-facing failures. Ruff enforces linting and import order with a 120-character line length. Test files use `test_*.py`; CLI command modules use short command names such as `add.py`, `use.py`, and `remove.py`.
+Use Python 3.11+ syntax and keep code typed. Public functions and methods should have clear, stable return types. Prefer `pathlib.Path` for filesystem work, small functions, and explicit error classes for user-facing failures. Ruff enforces linting and import order with a 120-character line length. Test files use `test_*.py`; CLI command modules use short command names such as `add.py`, `use.py`, and `remove.py`.
 
 ## Testing Guidelines
 
