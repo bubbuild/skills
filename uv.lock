@@ -759,7 +759,6 @@ wheels = [
 
 [[package]]
 name = "skills"
-version = "0.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "platformdirs" },
