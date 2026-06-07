@@ -1,6 +1,6 @@
 # Plugin Reference
 
-Plugins extend sources, install targets, or extra config sources.
+Plugins extend sources, install targets, extra config sources, or prompt rendering.
 
 Register plugins through the `skills` entry point group:
 
@@ -35,3 +35,6 @@ class Plugin:
 - `config_sources(project_root)`: return extra project config sources. These
   sources are read below `skills.toml` and above global defaults; plugins cannot
   change project discovery or the local write target.
+- `render_prompt(skill, prompt, project)`: optionally wrap or transform the raw
+  `SKILL.md` text returned by `skills use`. Return `None` to keep the default
+  raw prompt.

@@ -9,6 +9,7 @@ from skills.config import ConfigSource
 from skills.source import FetchedSource, ParsedSource
 
 if TYPE_CHECKING:
+    from skills.features.discovery import Skill
     from skills.project import Project
 
 SKILLS_HOOK_NAMESPACE = "skills"
@@ -35,4 +36,9 @@ class SkillsHookSpecs:
     @hookspec
     def config_sources(self, project_root: Path) -> list[ConfigSource]:
         """Return extra project configuration sources below skills.toml."""
+        raise NotImplementedError
+
+    @hookspec(firstresult=True)
+    def render_prompt(self, skill: Skill, prompt: str, project: Project) -> str | None:
+        """Render a skill prompt, optionally wrapping the raw SKILL.md text."""
         raise NotImplementedError

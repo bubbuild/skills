@@ -9,7 +9,7 @@ It provides:
 - project-scoped installs by default;
 - optional global installs with `--global`;
 - built-in local/Git sources and the `.agents/skills` target;
-- Pluggy hooks for adding sources, targets, and extra config sources.
+- Pluggy hooks for adding sources, targets, extra config sources, and prompt rendering.
 
 ## Library First
 

@@ -42,7 +42,7 @@ def _render_installed(project: Project, options: UseOptions) -> UseResult | None
     if entry is None:
         return None
     skill = _read_single_skill(Path(entry.skill_path), name)
-    return UseResult(skill=skill, prompt=_read_prompt(skill.path), source_path=skill.path)
+    return _render_result(project, skill)
 
 
 def _render_source(project: Project, options: UseOptions) -> UseResult:
@@ -51,7 +51,13 @@ def _render_source(project: Project, options: UseOptions) -> UseResult:
     fetched = hooks.fetch_source(parsed, project, refresh=options.refresh)
     skills = discover_skills(fetched.root)
     selected = _select_one(skills, options.skill)
-    return UseResult(skill=selected, prompt=_read_prompt(selected.path), source_path=selected.path)
+    return _render_result(project, selected)
+
+
+def _render_result(project: Project, skill: Skill) -> UseResult:
+    prompt = _read_prompt(skill.path)
+    rendered = project.require_hooks().render_prompt(skill, prompt, project)
+    return UseResult(skill=skill, prompt=rendered, source_path=skill.path)
 
 
 def _select_one(skills: list[Skill], selected: str | None) -> Skill:

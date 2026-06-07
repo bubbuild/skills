@@ -3,13 +3,16 @@ from __future__ import annotations
 import importlib.metadata
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import pluggy
 
 from skills.config import ConfigSource
 from skills.hookspecs import SKILLS_HOOK_NAMESPACE, SkillsHookSpecs
 from skills.source import FetchedSource, ParsedSource
+
+if TYPE_CHECKING:
+    from skills.features.discovery import Skill
 
 
 @dataclass(frozen=True)
@@ -46,6 +49,12 @@ class PluginRuntime:
         for group in groups:
             sources.extend(cast(list[ConfigSource], group))
         return sources
+
+    def render_prompt(self, skill: Skill, prompt: str, project: Any) -> str:
+        rendered = self.manager.hook.render_prompt(skill=skill, prompt=prompt, project=project)
+        if rendered is None:
+            return prompt
+        return cast(str, rendered)
 
 
 class UnsupportedSourceError(ValueError):

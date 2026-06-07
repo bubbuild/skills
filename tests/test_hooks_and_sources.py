@@ -4,7 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from skills import SkillsManager
+from skills import SkillsManager, hookimpl
+from skills.features.discovery import Skill
+from skills.plugins import PluginRegistry
 
 
 def test_builtin_source_parser_handles_supported_git_forms(tmp_path: Path) -> None:
@@ -39,3 +41,26 @@ def test_unknown_target_requires_a_plugin(tmp_path: Path, make_skill) -> None:
 
     with pytest.raises(ValueError, match="unsupported install target"):
         manager.add(str(source), targets=["codex"])
+
+
+def test_render_prompt_hook_can_wrap_skill_output(tmp_path: Path, make_skill) -> None:
+    source = tmp_path / "source"
+    make_skill(source, "agent-skill", "Use this skill.")
+    plugins = PluginRegistry()
+    plugins.load()
+    plugins.manager.register(_PromptPlugin(), name="test.prompt")
+    manager = SkillsManager(tmp_path, plugins=plugins)
+
+    manager.add(str(source), mode="copy")
+    installed = manager.use("agent-skill")
+    direct = manager.use(str(source), skill="agent-skill")
+
+    assert installed.prompt.startswith("Use the agent-skill skill:\n\n")
+    assert direct.prompt.startswith("Use the agent-skill skill:\n\n")
+    assert "Use this skill." in installed.prompt
+
+
+class _PromptPlugin:
+    @hookimpl
+    def render_prompt(self, skill: Skill, prompt: str, project: object) -> str:
+        return f"Use the {skill.name} skill:\n\n{prompt}"

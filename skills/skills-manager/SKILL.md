@@ -80,8 +80,9 @@ Core built-ins are intentionally small:
 - `.agents/skills` target;
 - `skills.toml` project config and lower-priority plugin config sources.
 
-Add other agents or source formats through Pluggy hooks. Export plugin classes
-through the `skills` entry point group and use `from skills import hookimpl`.
+Add other agents, source formats, config sources, or prompt renderers through
+Pluggy hooks. Export plugin classes through the `skills` entry point group and
+use `from skills import hookimpl`.
 
 ## Tests
 
