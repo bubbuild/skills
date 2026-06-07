@@ -9,7 +9,7 @@ This repository is a Python package using a `src` layout. Core library code live
 - `uv sync`: install the project and development dependencies.
 - `uv run skills --help`: run the CLI locally.
 - `make test`: run the pytest suite with doctest modules.
-- `make check`: verify the lock file, run pre-commit hooks, and run mypy.
+- `make check`: verify the lock file, run prek hooks, and run mypy.
 - `uv run ruff check .`: run lint checks directly.
 - `uv run mypy`: run static type checks.
 - `make docs-test`: build documentation strictly with MkDocs.
