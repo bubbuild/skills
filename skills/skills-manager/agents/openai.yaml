@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skills Manager"
+  short_description: "Use and test the skills manager"
+  default_prompt: "Use $skills-manager to add built-in skills management to this project."

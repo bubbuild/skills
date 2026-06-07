@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+from skills.hookspecs import hookimpl
+from skills.manager import SkillsManager
+
+__version__ = "0.0.1"
+
+__all__ = ["SkillsManager", "__version__", "hookimpl"]

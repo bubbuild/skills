@@ -1,0 +1,37 @@
+site_name: skills
+repo_url: https://github.com/bubbuild/skills
+site_url: https://bubbuild.github.io/skills
+site_description: A Python-native agent skills manager built around pyproject.toml and PDM-inspired workflows.
+site_author: Chojan Shang
+edit_uri: edit/main/docs/
+repo_name: bubbuild/skills
+copyright: Maintained by <a href="https://psiace.com">psiace</a>.
+
+nav:
+  - Home: index.md
+  - Tutorial:
+      - Getting started: tutorials/getting-started.md
+  - How-to:
+      - Use as a library: how-to/use-as-library.md
+      - Use the CLI: how-to/use-the-cli.md
+  - Reference:
+      - Library: reference/library.md
+      - CLI: reference/cli.md
+      - Configuration: reference/configuration.md
+      - Plugins: reference/plugins.md
+      - Public API: modules.md
+  - Explanation:
+      - Design: explanation/design.md
+      - Project and global scope: explanation/project-and-global-scope.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: ["src/skills"]
+theme:
+  name: terminal
+
+markdown_extensions:
+  - toc:
+      permalink: true
